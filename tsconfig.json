@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+  
+      /* Basic Options */                       
+      "target": "es5",                       
+      "module": "es6",                  
+      "sourceMap": true,                      
+      "strict": true,                       
+      "alwaysStrict": true,   
+      "strictNullChecks": true     ,
+      "forceConsistentCasingInFileNames": true,    
+      "outDir": "dist"    
+    },
+    "include": ["**/*.ts", "**.*.tsx"],
+    "exclude": ["node_modules"]
+  }
