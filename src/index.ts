@@ -1,21 +1,34 @@
-import { Game } from "./game";
+import { Renderer, WebGLRenderer } from "./game";
 
-class App {
-	private _game: Game;
+class Main {
+	private renderer: Renderer;
 
-	constructor(game: Game) {
-        this._game = game;
-        this.gameLoop();
+	constructor(renderer : Renderer) {
+		this.renderer = renderer;
+        	this.animationLoop();
 	}
 
-	private gameLoop(): void {
+	private animationLoop(): void {
         // need to bind the current this reference to the callback
-        requestAnimationFrame(this.gameLoop.bind(this)); 
-        
-		this._game.render();
+        requestAnimationFrame(this.animationLoop.bind(this)); 
+		this.renderer.render();
 	}
 }
 
+
 window.onload = () => {
-	let app = new App(new Game());
+	const canvas = <HTMLCanvasElement>document.getElementById('canvas');
+		
+	if(canvas == null){
+		throw Error("unable to locate canvas.");
+	}
+
+	const nullableCtx = canvas.getContext("webgl") || 
+				canvas.getContext("experimental-webgl") ;
+	
+	if(nullableCtx == null){
+		throw Error("filed to create a webGl context");
+	}
+		
+	let app = new Main(new WebGLRenderer(nullableCtx));
 }
