@@ -1,9 +1,27 @@
-import { Renderer, WebGLRenderer } from "./game";
+import { Renderer, WebGLRenderer } from "./renderer";
+import { Component, find, eq } from "./ecs";
+
 
 class Main {
 	private renderer: Renderer;
 
 	constructor(renderer : Renderer) {
+		interface test {
+			"bob" : string,
+			"test" : number
+		}
+
+
+		const component = {
+			"bob" : true,
+			"test": 7
+		};
+		
+		find(component, {
+			"bob": eq(true),
+			"test": eq(7)
+		});
+
 		this.renderer = renderer;
         	this.animationLoop();
 	}
