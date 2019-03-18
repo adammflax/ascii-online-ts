@@ -23,14 +23,14 @@ describe('Vector2 unit tests', () => {
 describe('after associating entities can add component data', () => {
     it('should get ids', () => {
         const world = new World();
-        type idTable = ["srv" | "cln" | null, string];
+        type idTable = ["srv" | "cln", string];
 
         const testData  : idTable[] = [
-            [null, "0"],
+            ["srv", "srv0"],
             ["srv", "srv1"],
             ["cln", "cln2"],
-            [null, "3"],
-            [null,"4"],
+            ["cln", "cln3"],
+            ["cln","cln4"],
             ["srv", "srv5"],
             ["srv", "srv6"],
             ["cln", "cln7"]
