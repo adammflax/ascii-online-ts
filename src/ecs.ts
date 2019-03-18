@@ -58,16 +58,19 @@ export function eq<T extends ComponentValue>(value: T) : Predicate<T>{
 
 export class World{
     private static id: number = 0; 
-    test : Map<String, Set<Entity>>
+    private componentOwner:  Map<Component, Entity> ;
     constructor(private entities : Entity[] = []){
-        this.test = new Map(); 
+        this.componentOwner = new Map(); 
     }
 
-    public addEntity(prefix : "srv" | "cln" | null = null, ...componenets : Component[]) :Entity{
+    public addEntity(prefix : "srv" | "cln" | null = null, ...componenets : (Component | Component & Positionable)[]) :Entity{
         const id = String(World.id++);
         const entity : Entity = prefix != null ? prefix + id : id;
 
         this.entities.push(entity);
+        componenets.forEach(c => {
+            this.componentOwner.set(c, entity);
+        });
 
         return entity;
     }
