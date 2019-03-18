@@ -1,42 +1,84 @@
-export interface Comparable<T>{ compareTo(o1 : T) : number}
+//responsible for defining bow to compare 2 objects of the same class. Given o1 comparing
+//to o2. a value < 0 will be returned if o1 is smaller then o2, a value of 0 will be returned if
+//o1 == o2 and a value > 0 will be returned if o1 > o2.
+export interface Comparable<T>{ compareTo(o1 : T) : -1 | 0 | 1}
+
+export class Vector2 implements Comparable<Vector2> {
+    public constructor(public x : number, public y : number){}
+
+    compareTo(o1: Vector2):  -1 | 0 | 1 {
+        if(this.y > o1.y){
+            return 1;
+        }
+
+        if(this.y < o1.y){
+            return -1;
+        }
+
+        if(this.y == o1.y && this.x == o1.x){
+            return 0;
+        }
+
+        return this.x > o1.x ? 1 : -1;
+    } 
+
+    public toString = () : string => {
+        return `{x:${this.x},y:${this.y}}`;
+    }
+}
+
+export interface Positionable{ position: Vector2}
 
 export type Predicate<T extends ComponentValue> =  (object: T) => boolean;
 
-
-//{ test(object : T) : boolean }
-
 export type ComponentValue =  Number | String | Boolean | Comparable<any>;
 
-export function isComparable(value : any) : value is Comparable<any>{
+function isComparable(value : any) : value is Comparable<any>{
     return (<Comparable<any>>value).compareTo !== undefined;
 }
 
+//id are string as some entities are unique to client/server so can avoid coliisions
+//by prefixing id with client/server
+export type Entity = String;
 export type Component = { [key: string] : ComponentValue} 
 
 //for each property in the type if its a function exclude it from
 //type otherwise include it
-export type ComponentKey<T extends Component> = {[P in keyof T]: 
+type ComponentKey<T extends Component> = {[P in keyof T]: 
                                                 T[P] extends Function ? never : P}[keyof T];
 
-//<T extends Component>
-
-export type ComponentProperties<T extends Component, K extends keyof T> = {
+type ComponentProperties<T extends Component, K extends keyof T> = {
     [P in K]: Predicate<T[P]>;
 };
-
-//Pick<T, ComponentKey<T>>;
-
-
-export function find<T extends Component, K extends ComponentProperties<T, ComponentKey<T>>>(
-    object : T,
-    methodName : Partial<K>
-)  : boolean{
-     console.log(methodName);
-    return  false;
-}
-
 
 export function eq<T extends ComponentValue>(value: T) : Predicate<T>{
     return (object: T) => isComparable(object) ? object.compareTo(value) === 0 : 
     object === value;
+}
+
+export class World{
+    private static id: number = 0; 
+    test : Map<String, Set<Entity>>
+    constructor(private entities : Entity[] = []){
+        this.test = new Map(); 
+    }
+
+    public addEntity(prefix : "srv" | "cln" | null = null, ...componenets : Component[]) :Entity{
+        const id = String(World.id++);
+        const entity : Entity = prefix != null ? prefix + id : id;
+
+        this.entities.push(entity);
+
+        return entity;
+    }
+
+
+    public find<T extends Component, K extends ComponentProperties<T, ComponentKey<T>>>(
+        object : T,
+        query : Partial<K>
+    )  : boolean{
+        let result = true
+        console.log(query);
+        return  false;
+    }
 }

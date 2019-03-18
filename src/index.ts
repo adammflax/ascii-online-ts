@@ -1,5 +1,5 @@
 import { Renderer, WebGLRenderer } from "./renderer";
-import { Component, find, eq } from "./ecs";
+import { Component, eq, World } from "./ecs";
 
 
 class Main {
@@ -11,11 +11,16 @@ class Main {
 			"test" : number
 		}
 
-
 		const component = {
 			"bob" : true,
 			"test": 7
 		};
+
+		const world = new World();
+		world.addEntity();
+		world.addEntity("cln", {
+			"eight": 9
+		});
 		
 		find(component, {
 			"bob": eq(true),
