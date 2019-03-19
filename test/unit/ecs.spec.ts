@@ -1,4 +1,4 @@
-import { World, Vector2, Entity } from "../../src/ecs";
+import { World, Vector2, Entity, eq } from "../../src/ecs";
 
 describe('Vector2 unit tests', () => {
     it('vector further away from 0,0 y based should be greater then those closer to0,0', () => {
@@ -20,8 +20,8 @@ describe('Vector2 unit tests', () => {
     });
 }); 
 
-describe('after associating entities can add component data', () => {
-    it('should get ids', () => {
+describe('Entities can be queried and created by world', () => {
+    it('should generate unique ids on new entity', () => {
         const world = new World();
         type idTable = ["srv" | "cln", string];
 
@@ -38,9 +38,51 @@ describe('after associating entities can add component data', () => {
 
         for(var i = 0; i < testData.length; i++){
             var data = testData[i];       
-            var entity = world.addEntity(data[0]);
+            var entity = world.createEntity(data[0]);
+            entity.bob = "test"
 
-            expect(entity).toEqual(data[1], `expected entry ${testData[0]} entry to have value ${testData[1]}`);
+            expect(entity.id).toEqual(data[1], `expected entry ${testData[0]} entry to have value ${testData[1]}`);
         }
+    });
+
+    it('given entity has component of bob with equal value should find in query', () => {
+        const world = new World();
+        const entity = world.createEntity("cln");
+
+        entity['bob'] = 7;
+
+        const result = world.find({
+            'bob': eq(7)
+        });
+
+        expect(result).toEqual([entity]);
+    });
+
+    it('given entity of 2 data values should fail as second property not equal', () => {
+        const world = new World();
+        const entity = world.createEntity("cln");
+
+        entity['bob'] = 7;
+        entity['bob2'] = 7;
+
+        const result = world.find({
+            'bob': eq(7),
+            'bob2': eq(8)
+        });
+
+        expect(result).toEqual([]);
+    });
+
+    it('given no parameters should find everything', () => {
+        const world = new World();
+        const entity = world.createEntity("cln");
+        const entity2 = world.createEntity("cln");
+
+        entity['bob'] = 7;
+        entity['bob2'] = 7;
+
+        const result = world.find({});
+
+        expect(result).toEqual([entity, entity2]);
     });
 });

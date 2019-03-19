@@ -2,8 +2,8 @@
     "compilerOptions": {
   
       /* Basic Options */                       
-      "target": "es5",                       
-      "module": "es2015",                  
+      "target": "es6",                       
+      "module": "es6",                  
       "sourceMap": true,                      
       "strict": true,                       
       "alwaysStrict": true,   
