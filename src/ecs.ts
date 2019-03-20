@@ -74,43 +74,6 @@ export class World {
         return Object.freeze(Object.assign({}, entity));
     }
 
-    // const proxyEntity = ((world: World) => {
-    //     return new Proxy(entity, {
-    //         set: function (target: Entity, p: PropertyKey, value: ComponentValue, receiver: any): boolean {
-
-    //             if (!world.propertiesToEntities.has(p)) {
-    //                 world.propertiesToEntities.set(p, []);
-    //             }
-
-    //             const setOfEntities = world.propertiesToEntities.get(p);
-
-    //             if (setOfEntities !== undefined) {
-    //                 setOfEntities.push(target);
-    //             }
-
-    //             if (typeof p === "string") {
-    //                 target[p] = value;
-    //             }
-
-    //             return true;
-    //         },
-    //         deleteProperty: function (target: Entity, p: PropertyKey): boolean {
-    //             const setOfEntities = world.propertiesToEntities.get(p);
-
-    //             if (setOfEntities !== undefined) {
-    //                 setOfEntities.splice(setOfEntities.indexOf(target), 1);
-    //             }
-
-    //             if (typeof p === "string") {
-    //                 delete target[p];
-    //             }
-
-    //             return true;
-    //         }
-    //     });
-    // })(this);
-
-
     public assign(entity: Entity, extraValues: { [k: string]: ComponentValue }): Readonly<Entity> {
         const realEntity = this.idToEntity.get(entity.id);
 
