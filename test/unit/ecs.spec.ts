@@ -74,7 +74,27 @@ describe('Entities can be queried and created by world', () => {
     
     it('given entity has component of bob with equal value  to query should be returned in world', () => {
         const world = new World();
-        const entity = world.createEntity("cln", {
+        const goodEntity1 = world.createEntity("cln", {
+            'bob': 7
+        });
+
+        //this entity wont be found in test
+        world.createEntity("cln", {
+            'bob': 8
+        });
+
+        //this entity also wont be found in test
+        world.createEntity("cln", {
+            'bob': 9
+        });
+
+        //this entity wont be found in the test and doesn't have a bob property
+        world.createEntity("cln");
+
+        //this is another good entity we are setting bob propety another way to make syre
+        //it just works
+        var goodEntity2 = world.createEntity("cln");
+        goodEntity2 = world.assign(goodEntity2, {
             'bob': 7
         });
 
@@ -82,7 +102,7 @@ describe('Entities can be queried and created by world', () => {
             'bob': eq(7)
         });
 
-        expect(result).toEqual([entity]);
+        expect(result).toEqual([goodEntity1, goodEntity2]);
     });
 
     it('given entity of 2 data values should fail as second property not equal', () => {
