@@ -39,17 +39,44 @@ describe('Entities can be queried and created by world', () => {
         for(var i = 0; i < testData.length; i++){
             var data = testData[i];       
             var entity = world.createEntity(data[0]);
-            entity.bob = "test"
-
             expect(entity.id).toEqual(data[1], `expected entry ${testData[0]} entry to have value ${testData[1]}`);
         }
     });
 
-    it('given entity has component of bob with equal value should find in query', () => {
+    it('when creating entity with properties we get back a read only entity with id and properties', () => {
         const world = new World();
-        const entity = world.createEntity("cln");
+        const entity = world.createEntity("cln", {
+            'bob': 7
+        });
 
-        entity['bob'] = 7;
+        expect(entity).toEqual({
+            'id': 'cln0',
+            'bob': 7
+        });
+
+        expect(Object.isFrozen(entity)).toBeTruthy();
+    });
+
+    it('with a read only entity the world an add additional properties to the entity', () => {
+        const world = new World();
+        let entity = world.createEntity("cln");
+        entity = world.assign(entity, {
+            'bob': 7
+        });
+
+        expect(entity).toEqual({
+            'id': 'cln0',
+            'bob': 7
+        });
+
+        expect(Object.isFrozen(entity)).toBeTruthy();
+    });
+    
+    it('given entity has component of bob with equal value  to query should be returned in world', () => {
+        const world = new World();
+        const entity = world.createEntity("cln", {
+            'bob': 7
+        });
 
         const result = world.find({
             'bob': eq(7)
@@ -60,10 +87,11 @@ describe('Entities can be queried and created by world', () => {
 
     it('given entity of 2 data values should fail as second property not equal', () => {
         const world = new World();
-        const entity = world.createEntity("cln");
-
-        entity['bob'] = 7;
-        entity['bob2'] = 7;
+        let entity = world.createEntity("cln");
+        entity = world.assign(entity, {
+            'bob': 7,
+            'bob2': 7
+        });
 
         const result = world.find({
             'bob': eq(7),
@@ -77,9 +105,6 @@ describe('Entities can be queried and created by world', () => {
         const world = new World();
         const entity = world.createEntity("cln");
         const entity2 = world.createEntity("cln");
-
-        entity['bob'] = 7;
-        entity['bob2'] = 7;
 
         const result = world.find({});
 

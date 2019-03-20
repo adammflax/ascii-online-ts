@@ -6,16 +6,6 @@ class Main {
 	private renderer: Renderer;
 
 	constructor(renderer : Renderer) {
-		interface test {
-			"bob" : string,
-			"test" : number
-		}
-
-		const component = {
-			"bob" : true,
-			"test": 7
-		};
-
 		const world = new World();
 		world.find({
 			"test": eq(7),

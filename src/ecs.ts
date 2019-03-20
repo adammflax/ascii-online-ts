@@ -52,57 +52,100 @@ export function eq<T extends ComponentValue>(value: T): Predicate<T> {
 export class World {
     private id: number = 0;
     private propertiesToEntities: Map<PropertyKey, Entity[]>;
+    private idToEntity: Map<string, Entity>;
 
-    constructor(private entities: Entity[] = []) {
+    constructor() {
         this.propertiesToEntities = new Map();
+        this.idToEntity = new Map();
     }
 
-    public createEntity(prefix: "srv" | "cln"): Entity {
+    public createEntity(prefix: "srv" | "cln", extraValues?: { [k: string]: ComponentValue }): Readonly<Entity> {
         const id = String(this.id++);
         const entity: Entity = {
             "id": prefix != null ? prefix + id : id
         }
 
-        const proxyEntity = ((world: World) => {
-            return new Proxy(entity, {
-                set: function (target: Entity, p: PropertyKey, value: ComponentValue, receiver: any): boolean {
+        this.idToEntity.set(entity.id, entity);
 
-                    if (!world.propertiesToEntities.has(p)) {
-                        world.propertiesToEntities.set(p, []);
-                    }
+        if (extraValues != null) {
+            this.addProperties(entity, extraValues);
+        }
 
-                    const setOfEntities = world.propertiesToEntities.get(p);
-
-                    if (setOfEntities !== undefined) {
-                        setOfEntities.push(target);
-                    }
-
-                    if (typeof p === "string") {
-                        target[p] = value;
-                    }
-
-                    return true;
-                },
-                deleteProperty: function (target: Entity, p: PropertyKey): boolean {
-                    const setOfEntities = world.propertiesToEntities.get(p);
-
-                    if (setOfEntities !== undefined) {
-                        setOfEntities.splice(setOfEntities.indexOf(target), 1);
-                    }
-
-                    if (typeof p === "string") {
-                        delete target[p];
-                    }
-
-                    return true;
-                }
-            });
-        })(this);
-
-        this.entities.push(proxyEntity);
-        return proxyEntity;
+        return Object.freeze(Object.assign({}, entity));
     }
 
+    // const proxyEntity = ((world: World) => {
+    //     return new Proxy(entity, {
+    //         set: function (target: Entity, p: PropertyKey, value: ComponentValue, receiver: any): boolean {
+
+    //             if (!world.propertiesToEntities.has(p)) {
+    //                 world.propertiesToEntities.set(p, []);
+    //             }
+
+    //             const setOfEntities = world.propertiesToEntities.get(p);
+
+    //             if (setOfEntities !== undefined) {
+    //                 setOfEntities.push(target);
+    //             }
+
+    //             if (typeof p === "string") {
+    //                 target[p] = value;
+    //             }
+
+    //             return true;
+    //         },
+    //         deleteProperty: function (target: Entity, p: PropertyKey): boolean {
+    //             const setOfEntities = world.propertiesToEntities.get(p);
+
+    //             if (setOfEntities !== undefined) {
+    //                 setOfEntities.splice(setOfEntities.indexOf(target), 1);
+    //             }
+
+    //             if (typeof p === "string") {
+    //                 delete target[p];
+    //             }
+
+    //             return true;
+    //         }
+    //     });
+    // })(this);
+
+
+    public assign(entity: Entity, extraValues: { [k: string]: ComponentValue }): Readonly<Entity> {
+        const realEntity = this.idToEntity.get(entity.id);
+
+        if (realEntity == null) {
+            throw `we have failed to find an entity of id ${entity.id} when assigning data`;
+        }
+
+        this.addProperties(realEntity, extraValues);
+        return Object.freeze(Object.assign({}, realEntity, extraValues));
+    }
+
+    private addProperties(entity: Entity, extraValues: { [k: string]: ComponentValue }) {
+        for (const prop in extraValues) {
+            //update value to be what we asked for
+            entity[prop] = extraValues[prop];
+            //if we don't have a mapping for this property create the hash map
+            if (!this.propertiesToEntities.has(prop)) {
+                this.propertiesToEntities.set(prop, []);
+            }
+
+            const entitiesForProp = this.propertiesToEntities.get(prop);
+
+            //should never be null but have to handle it due to typing
+            if (entitiesForProp == null) {
+                throw `somehow we have failed to find the prop ${prop} in our prop to entity map!`;
+            }
+
+            //check to see if we have this entity already, if we do we don't need to do anything
+            const hasEntity = entitiesForProp.some(e => e.id === entity.id);
+
+            if (!hasEntity) {
+                entitiesForProp.push(entity);
+            }
+        }
+    }
 
     public find(
         query: { [key: string]: Predicate<any> }
@@ -110,18 +153,18 @@ export class World {
         let results: Entity[] = [];
 
         //no query means return everything
-        if(Object.keys(query).length == 0){
-            return this.entities;
+        if (Object.keys(query).length == 0) {
+            return [...this.idToEntity.values()];
         }
 
         for (const prop in query) {
             const predicate = query[prop];
             var newAdditions = (this.propertiesToEntities.get(prop) || []).filter(e => predicate(e[prop]));
-    
+
             //we've not had any entities before
             if (results.length == 0) {
                 results = newAdditions;
-            }else{
+            } else {
                 results = results.filter(value => newAdditions.includes(value))
             }
         }
