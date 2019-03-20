@@ -44,6 +44,10 @@ export interface Entity {
     [k: string]: ComponentValue;
 }
 
+export function not<T extends ComponentValue>(predicate: Predicate<T>): Predicate<T>{
+    return (object: T) => !predicate(object);
+}
+
 export function eq<T extends ComponentValue>(value: T): Predicate<T> {
     return (object: T) => isComparable(object) ? object.compareTo(value) === 0 :
         object === value;
@@ -122,6 +126,7 @@ export class World {
 
         for (const prop in query) {
             const predicate = query[prop];
+            console.log(this.propertiesToEntities.get(prop));
             var newAdditions = (this.propertiesToEntities.get(prop) || []).filter(e => predicate(e[prop]));
 
             //we've not had any entities before
