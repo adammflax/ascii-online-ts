@@ -74,7 +74,7 @@ export function gte<T extends ComponentValue>(value: T): Predicate<T> {
 
 export function gt<T extends ComponentValue>(value: T): Predicate<T> {
   return (object: T) =>
-    isComparable(object) ? object.compareTo(value) === 1 : object < value;
+    isComparable(object) ? object.compareTo(value) === 1 : object > value;
 }
 
 export class World {
