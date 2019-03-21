@@ -5,10 +5,10 @@ export interface Comparable<T> {
   compareTo(o1: T): -1 | 0 | 1;
 }
 
-export class Vector2 implements Comparable<Vector2> {
-  public constructor(public x: number, public y: number) {}
+export class Vector3 implements Comparable<Vector3> {
+  public constructor(public x: number, public y: number, public z: number) {}
 
-  compareTo(o1: Vector2): -1 | 0 | 1 {
+  compareTo(o1: Vector3): -1 | 0 | 1 {
     if (this.y > o1.y) {
       return 1;
     }
@@ -17,11 +17,23 @@ export class Vector2 implements Comparable<Vector2> {
       return -1;
     }
 
-    if (this.y == o1.y && this.x == o1.x) {
-      return 0;
+    if(this.x > o1.x){
+        return 1;
     }
 
-    return this.x > o1.x ? 1 : -1;
+    if(this.x < o1.x){
+        return -1;
+    }
+
+    if(this.z > o1.z){
+        return 1;
+    }
+
+    if(this.z < o1.z){
+        return -1;
+    }
+
+    return 0;
   }
 
   public toString = (): string => {
@@ -30,7 +42,7 @@ export class Vector2 implements Comparable<Vector2> {
 }
 
 export interface Positionable {
-  position: Vector2;
+  position: Vector3;
 }
 
 export type Predicate<T extends ComponentValue> = (object: T) => boolean;

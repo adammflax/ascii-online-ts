@@ -1,14 +1,14 @@
-import { World, Vector2, Entity, eq, not, lt, gt, lte, gte, ComponentValue } from "../../src/ecs";
+import { World, Vector3, Entity, eq, not, lt, gt, lte, gte, ComponentValue } from "../../src/ecs";
 
 describe("Vector2 unit tests", () => {
   it("vector further away from 0,0 y based should be greater then those closer to0,0", () => {
-    type VectorTable = [Vector2, Vector2, -1 | 0 | 1];
+    type VectorTable = [Vector3, Vector3, -1 | 0 | 1];
 
     const testData: VectorTable[] = [
-      [new Vector2(1, 1), new Vector2(1, 2), -1],
-      [new Vector2(2, 1), new Vector2(2, 1), 0],
-      [new Vector2(1, 21), new Vector2(1, 1), 1],
-      [new Vector2(1, 1), new Vector2(2, 1), -1]
+      [new Vector3(1, 1, 0), new Vector3(1, 2, 0), -1],
+      [new Vector3(2, 1, 0), new Vector3(2, 1, 0), 0],
+      [new Vector3(1, 21, 0), new Vector3(1, 1, 0), 1],
+      [new Vector3(1, 1, 0), new Vector3(2, 1, 0), -1]
     ];
 
     for (var i = 0; i < testData.length; i++) {
@@ -80,9 +80,9 @@ describe("Entities can be queried and created by world", () => {
       ["bob", "BOB", false],
       ["adam", "bob", false],
       //objects
-      [new Vector2(0, 0), new Vector2(0, 0), true],
-      [new Vector2(1, 0), new Vector2(0, 0), false],
-      [new Vector2(1, 0), new Vector2(0, 2), false]
+      [new Vector3(0, 0, 0), new Vector3(0, 0, 0), true],
+      [new Vector3(1, 0, 0), new Vector3(0, 0, 0), false],
+      [new Vector3(1, 0, 0), new Vector3(0, 2, 0), false]
     ];
 
     for (var i = 0; i < tabledata.length; i++) {
@@ -114,9 +114,9 @@ describe("Entities can be queried and created by world", () => {
       ["bob", "BOB", false],
       ["adam", "dad", true],
       //objects
-      [new Vector2(0, 0), new Vector2(0, 0), false],
-      [new Vector2(1, 0), new Vector2(0, 0), false],
-      [new Vector2(0, 0), new Vector2(0, 2), true]
+      [new Vector3(0, 0, 0), new Vector3(0, 0, 0), false],
+      [new Vector3(1, 0, 0), new Vector3(0, 0, 0), false],
+      [new Vector3(0, 0, 0), new Vector3(0, 2, 0), true]
     ];
 
     for (var i = 0; i < tabledata.length; i++) {
@@ -146,9 +146,9 @@ describe("Entities can be queried and created by world", () => {
       ["bob", "BOB", false],
       ["adam", "dad", true],
       //objects
-      [new Vector2(0, 0), new Vector2(0, 0), false],
-      [new Vector2(1, 0), new Vector2(0, 0), false],
-      [new Vector2(0, 0), new Vector2(0, 2), true]
+      [new Vector3(0, 0, 0), new Vector3(0, 0, 0), false],
+      [new Vector3(1, 0, 0), new Vector3(0, 0, 0), false],
+      [new Vector3(0, 0, 0), new Vector3(0, 2, 0), true]
     ];
 
     for (var i = 0; i < tabledata.length; i++) {
