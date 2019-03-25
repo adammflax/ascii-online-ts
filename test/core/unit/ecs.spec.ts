@@ -1,4 +1,4 @@
-import { World, Vector3, Entity, eq, not, lt, gt, lte, gte, ComponentValue } from "../../src/ecs";
+import { World, Vector3, Entity, eq, not, lt, gt, lte, gte, ComponentValue } from "../../../src/core/ecs"
 
 describe("Vector2 unit tests", () => {
   it("vector further away from 0,0 y based should be greater then those closer to0,0", () => {
@@ -10,6 +10,8 @@ describe("Vector2 unit tests", () => {
       [new Vector3(1, 21, 0), new Vector3(1, 1, 0), 1],
       [new Vector3(1, 1, 0), new Vector3(2, 1, 0), -1]
     ];
+
+    //todo test z axis
 
     for (var i = 0; i < testData.length; i++) {
       var data = testData[i];

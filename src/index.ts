@@ -1,28 +1,26 @@
-import { Renderer, WebGLRenderer } from "./renderer";
-import { eq, World } from "./ecs";
+import { Renderer, WebGLRenderer } from "./client-engine/renderer";
+import { eq, World, Vector3 } from "./core/ecs";
+import {Screen} from "./client-engine/screen"
 
 
 class Main {
-	private renderer: Renderer;
-
-	constructor(renderer : Renderer) {
+	constructor(private screen : Screen) {
 		const world = new World();
-		world.find({
-			"test": eq(7),
-			"bob": eq(true),
-		});
+		const player = world.createEntity("cln", {
+			'position': new Vector3(32, 0, 32),
+			'sprite': '@',
+			'visible': true
+		})
 
-		this.renderer = renderer;
-        	this.animationLoop();
+        this.animationLoop();
 	}
 
 	private animationLoop(): void {
         // need to bind the current this reference to the callback
-        requestAnimationFrame(this.animationLoop.bind(this)); 
-		this.renderer.render();
+		this.screen.redraw();
+		requestAnimationFrame(this.animationLoop.bind(this)); 
 	}
 }
-
 
 window.onload = () => {
 	const canvas = <HTMLCanvasElement>document.getElementById('canvas');
@@ -37,6 +35,7 @@ window.onload = () => {
 	if(nullableCtx == null){
 		throw Error("filed to create a webGl context");
 	}
-		
-	let app = new Main(new WebGLRenderer(nullableCtx));
+
+	const renderer = new WebGLRenderer(nullableCtx);
+	let app = new Main(new Screen(canvas.clientWidth, canvas.clientHeight, renderer));
 }
