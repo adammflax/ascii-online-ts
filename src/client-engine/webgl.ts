@@ -1,4 +1,5 @@
 import { stringify } from "querystring";
+import { Shader } from "./renderer";
 
 export const vertexShader = `
     attribute vec3 squareVertexPosition;
@@ -14,40 +15,72 @@ void main(void){
 }                    
 `;
 
-export function createGSGLProgram(
-  gl: WebGLRenderingContext,
-  programName: string,
-  vertexShaderSrc: string,
-  fragmentShaderSrc: string
-): WebGLProgram {
-  // create a program.
-  var program = gl.createProgram();
+export class GSGLShader implements Shader {
+  private program: WebGLProgram;
+  private attributes: Map<String, GLint>;
 
-  if (program == null) {
-    throw `Failed to create program ${programName} as createProgram returned null`;
+  public constructor(
+    private gl: WebGLRenderingContext,
+    private id: string,
+    private vertexShaderSrc: string,
+    private fragmentShaderSrc: string
+  ) {
+    var program = gl.createProgram();
+
+    if (program == null) {
+      throw `Failed to create program ${id} as createProgram returned null`;
+    }
+
+    // attach the shaders.
+    gl.attachShader(
+      program,
+      compileShader(gl, vertexShaderSrc, gl.VERTEX_SHADER)
+    );
+    gl.attachShader(
+      program,
+      compileShader(gl, fragmentShaderSrc, gl.FRAGMENT_SHADER)
+    );
+
+    // link the program.
+    gl.linkProgram(program);
+
+    // Check if it linked.
+    var success = gl.getProgramParameter(program, gl.LINK_STATUS);
+    if (!success) {
+      // something went wrong with the link
+      throw "program filed to link:" + gl.getProgramInfoLog(program);
+    }
+    this.attributes = new Map();
+    this.program = program;
   }
 
-  // attach the shaders.
-  gl.attachShader(
-    program,
-    compileShader(gl, vertexShaderSrc, gl.VERTEX_SHADER)
-  );
-  gl.attachShader(
-    program,
-    compileShader(gl, fragmentShaderSrc, gl.FRAGMENT_SHADER)
-  );
+  withAttribute(name: string, data: number[]): GSGLShader {
+    const gl = this.gl;
 
-  // link the program.
-  gl.linkProgram(program);
+    const attribute = gl.getAttribLocation(this.program, name);
 
-  // Check if it linked.
-  var success = gl.getProgramParameter(program, gl.LINK_STATUS);
-  if (!success) {
-    // something went wrong with the link
-    throw "program filed to link:" + gl.getProgramInfoLog(program);
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.vertexAttribPointer(attribute, 3, gl.FLOAT, false, 0, 0);
+
+    this.attributes.set(name, attribute);
+
+    return this;
   }
 
-  return program;
+  apply(): void {
+    const gl = this.gl;
+    gl.useProgram(this.program);
+
+    this.attributes.forEach((attribute : GLint, key : String) => {
+      gl.enableVertexAttribArray(attribute);
+    })
+
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
 }
 
 function compileShader(
