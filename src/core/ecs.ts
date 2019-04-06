@@ -6,7 +6,38 @@ export interface Comparable<T> {
 }
 
 export class Vector3 implements Comparable<Vector3> {
-  public constructor(public x: number, public y: number, public z: number) {}
+  public value : Float32Array;
+
+  public constructor(x: number, y: number, z: number) {
+    this.value = new Float32Array(3);
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+
+  public get x() : number{
+    return this.value[0];
+  }
+
+  public set x(x : number){
+    this.value[0] = x;
+  }
+
+  public get y() : number{
+    return this.value[1];
+  }
+
+  public set y(y : number){
+    this.value[1] = y;
+  }
+
+  public get z() : number{
+    return this.value[2];
+  }
+
+  public set z(z : number){
+    this.value[2] = z;
+  }
 
   compareTo(o1: Vector3): -1 | 0 | 1 {
     if (this.y > o1.y) {
@@ -37,12 +68,15 @@ export class Vector3 implements Comparable<Vector3> {
   }
 
   public toString = (): string => {
-    return `{x:${this.x},y:${this.y}}`;
+    return `{${this.x},${this.y}, ${this.z}}`;
   };
 }
 
 export interface Positionable {
   position: Vector3;
+  rotation?: number;
+  width: number;
+  height: number;
 }
 
 export type Predicate<T extends ComponentValue> = (object: T) => boolean;

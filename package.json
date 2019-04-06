@@ -32,8 +32,10 @@
   "dependencies": {
     "@types/express": "^4.16.1",
     "@types/express-ws": "^3.0.0",
+    "@types/gl-matrix": "^2.4.5",
     "express": "^4.16.4",
     "express-ws": "^4.0.0",
-    "fastbitset": "^0.2.8"
+    "fastbitset": "^0.2.8",
+    "gl-matrix": "^3.0.0"
   }
 }

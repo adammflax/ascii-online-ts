@@ -19,7 +19,7 @@ module.exports = function (config) {
                 module: webpackConf.module,
                 resolve: webpackConf.resolve
               },
-            files: ['test/unit/*.spec.ts'],
+            files: ['test/*/unit/*.spec.ts'],
             plugins: ['karma-webpack', 'karma-jasmine', 'karma-chrome-launcher']
         })
 }  

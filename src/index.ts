@@ -1,6 +1,7 @@
-import { Renderer, WebGLRenderer } from "./client-engine/renderer";
+import { Renderer} from "./client-engine/renderer";
 import { eq, World, Vector3 } from "./core/ecs";
 import {Screen} from "./client-engine/screen"
+import {WebGLRenderer} from "./client-engine/webgl"
 
 
 class Main {
